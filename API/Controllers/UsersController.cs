@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -22,6 +23,7 @@ namespace API.Controllers
             return _dataContext.Users.ToList();
         }
 
+        [Authorize()]
         [HttpGet("{id}")]
         public ActionResult<AppUser> GetUser(int id)
         {
