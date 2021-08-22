@@ -1,33 +1,52 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using API.Data;
+using API.Dto;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly DataContext _dataContext;
-        public UsersController(DataContext dataContext)
+        //private readonly DataContext _dataContext;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
-            _dataContext = dataContext;
-
+            _mapper = mapper;
+            _userRepository = userRepository;
         }
         [HttpGet]
-        public ActionResult<IEnumerable<AppUser>> GetAll()
+        public async Task<ActionResult<IEnumerable<AppUserDto>>> GetUsersAsync()
         {
-            return _dataContext.Users.ToList();
+            var users = await _userRepository.GetUsersAsync();
+            var usersDto = _mapper.Map<IEnumerable<AppUserDto>>(users);
+            return Ok(usersDto);
         }
 
-        [Authorize()]
-        [HttpGet("{id}")]
-        public ActionResult<AppUser> GetUser(int id)
+
+        /*[HttpGet("{id}")]
+        public async Task<ActionResult<AppUser>> GetUserById(int id)
         {
-            return _dataContext.Users.Find(id);
+            var user = await _userRepository.GetUserByIdAsync(id);
+            var userDto = _mapper.Map<AppUserDto>(user);
+            return Ok(userDto);
+        }*/
+
+        [HttpGet("{userName}")]
+        public async Task<ActionResult<AppUserDto>> GetUserByUserName(string userName)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(userName);
+            var userDto = _mapper.Map<AppUserDto>(user);
+            return Ok(userDto);
         }
     }
 }
