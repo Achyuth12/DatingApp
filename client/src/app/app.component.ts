@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   }
   title = 'The Dating App';
   getUsers() : void {
-    this.httpClient.get("https://localhost:5001/api/users").subscribe(response => {this.users = response;},err => {console.log(err);});
+    this.httpClient.get("https://localhost:44387/api/users").subscribe(response => {this.users = response;},err => {console.log(err);});
   }
 
   setCurrentUser(){

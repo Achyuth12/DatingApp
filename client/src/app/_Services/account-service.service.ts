@@ -21,8 +21,8 @@ currentUser$ = this.currentUserSource.asObservable();
         const user = response;
         if(user)
         {
-          localStorage.setItem('user',JSON.stringify(user));
-          this.currentUserSource.next(user);
+          
+          this.setCurrentUser(user);
           
         }
       })
@@ -35,8 +35,7 @@ currentUser$ = this.currentUserSource.asObservable();
         const user = response;
         if(user)
         {
-          localStorage.setItem('user',JSON.stringify(user));
-          this.currentUserSource.next(user);
+          this.setCurrentUser(user);
           
         }
       })
@@ -44,11 +43,22 @@ currentUser$ = this.currentUserSource.asObservable();
   }
 
   setCurrentUser(user : User){
+    localStorage.setItem('user',JSON.stringify(user));
     this.currentUserSource.next(user);
   }
 
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+  }
+
+  setMainPhoto(photoId : number)
+  {
+    return this.httpClient.put(this.baseURL + "users/set-main-photo/" + photoId,{});
+  }
+
+  deletePhoto(photoId : number)
+  {
+    return this.httpClient.delete(this.baseURL + "users/delete-photo" + photoId, {});
   }
 }

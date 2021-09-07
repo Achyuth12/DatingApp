@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AppUser>> LoginUser(LoginDto loginDto)
         {
-            var user = await _dataContext.Users.SingleOrDefaultAsync(u => u.UserName == loginDto.UserName);
+            var user = await _dataContext.Users.Include(p => p.Photos).SingleOrDefaultAsync(u => u.UserName == loginDto.UserName);
             if (user != null)
             {
                 using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -53,7 +54,7 @@ namespace API.Controllers
                     }
 
                 }
-                return Ok(new LoginResultDto { UserName = user.UserName, Token = _tokenService.CreateToken(user)});
+                return Ok(new LoginResultDto { UserName = user.UserName, Token = _tokenService.CreateToken(user), PhotoUrl = user.Photos.FirstOrDefault(x=>x.IsMain).Url});
 
             }
             return BadRequest("Unknown UserName or Password");
